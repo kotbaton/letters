@@ -12,7 +12,7 @@ def __print(text,
     else:
         spacing = (spacing//2+1, spacing//2)
     print(" "*spacing[0],
-          color.get(fg, attribute=attribute),
+          color.get(fg, bg, attribute=attribute),
           text,
           color.reset(),
           " "*spacing[1],
@@ -29,7 +29,7 @@ def rainbow(text,
         for l in text:
             if ' ' <= l <= '_':
                 __print(letter_part[ord(l)-ord(' ')],
-                        fg=c, attribute=attribute)
+                        spacing=spacing, fg=c, attribute=attribute)
                 c = c+1 if c<7 else 1
             else:
                 __print(letter_part[ord(' ')])
@@ -39,16 +39,18 @@ def rainbow(text,
 def attributed(text,
                font = font.font1,
                spacing = 2,
-               fg_color = 9,
-               bg_color = 0,
+               fg = 9,
+               bg = 0,
                attribute = 0):
     text = text.upper()
-    print(color.get(fg_color, attribute=attribute), end="")
     for letter_part in font:
         for l in text:
             if ' ' <= l <= '_':
-                print(letter_part[ord(l)-ord(' ')], end="")
+                __print(letter_part[ord(l)-ord(' ')],
+                        spacing=spacing,
+                        fg=fg,
+                        bg=bg,
+                        attribute=attribute)
             else:
                 print(" "*(spacing*2), end="")
         print()
-    print(color.reset(), end="")

@@ -16,10 +16,10 @@ def get_parser():
             return arg
 
     group.add_argument("-c", "--color",
-                        nargs=1,
+                        nargs='+',
                         type=process_color_arg,
-                        help="Set text color by color index or html code.")
-    group.add_argument("--rainbow",
+                        help="Set text color by color index or html code. First value will be used as text color and second as background color.")
+    group.add_argument("-r", "--rainbow",
                         action="store_true",
                         help="Print with different colors.")
     parser.add_argument("-s", "--spacing",
@@ -43,14 +43,14 @@ def main():
         text = " ".join(args.text).upper()
         printer.rainbow(text,
                         font.font1,
-                        args.spacing[0])
+                        spacing = args.spacing[0])
     elif args.color:
         text = " ".join(args.text).upper()
         printer.attributed(text,
                            font.font1,
-                           args.spacing[0],
-                           fg_color = args.color[0],
-                           bg_color = 0)
+                           spacing = args.spacing[0],
+                           fg = args.color[0],
+                           bg = args.color[1] if len(args.color) > 1 else None)
     else:
         parser.print_help()
 
