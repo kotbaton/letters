@@ -48,3 +48,17 @@ def by_hex(fg, bg = "#000000", attribute = 0):
 
     return f"\033[{attribute};38;2;{fg_rgb};48;2;{bg_rgb}m"
 
+def get(fg, attribute = 0):
+    """
+    Return string with ANSI escape code for set text colors
+
+    fg: html code or color index for text color
+    attribute: use Attribute class variables
+    """
+    if type(fg) is str:
+        return by_hex(fg, attribute=attribute)
+
+    elif type(fg) is int and 0 <= fg <= 255:
+        return by_index(fg, attribute=attribute)
+    else:
+        raise  TypeError("You can use only string or int.")

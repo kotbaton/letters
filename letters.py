@@ -1,60 +1,58 @@
 #!/usr/bin/python3
 import sys
-import fonts
-import color
+import argparse
 
+import font
+import printer
 
-def print_rainbowed(text, font, spacing = 2):
-    for letter_part in font:
-        c = 1
-        for l in text:
-            if ' ' <= l <= '_':
-                print(" "*(spacing//2),
-                      color.by_index(c),
-                      letter_part[ord(l)-ord(' ')],
-                      color.reset(),
-                      " "*(spacing//2),
-                      end="", sep="")
-                c = c+1 if c<7 else 1
-            else:
-                print(" "*(spacing*2), end="")
-        print()
+def get_parser():
+    parser = argparse.ArgumentParser(description="Print text in different ways.")
+    group = parser.add_mutually_exclusive_group()
 
+    def process_color_arg(arg):
+        try:
+            return int(arg)
+        except:
+            return arg
 
-def print_attributed(text,
-                     font,
-                     spacing = 2,
-                     fg_color = 9,
-                     bg_color = 0):
-    print(color.by_index(fg_color, bg_color), end="")
-    for letter_part in font:
-        for l in text:
-            if ' ' <= l <= '_':
-                print(" "*(spacing//2),
-                      letter_part[ord(l)-ord(' ')],
-                      " "*(spacing//2),
-                      end="", sep="")
-            else:
-                print(" "*(spacing*2), end="")
-        print()
-    print(color.reset(), end="")
+    group.add_argument("-c", "--color",
+                        nargs=1,
+                        type=process_color_arg,
+                        help="Set text color by color index or html code.")
+    group.add_argument("--rainbow",
+                        action="store_true",
+                        help="Print with different colors.")
+    parser.add_argument("-s", "--spacing",
+                        nargs=1,
+                        default=[2],
+                        action="store",
+                        type=int,
+                        help="Set space between letters. (default = 2)")
+    parser.add_argument("-t", "--text",
+                        nargs='*',
+                        type=str,
+                        help="Text for printing.")
+    return parser
 
 
 def main():
-    text = "some text".upper()
-    if len(sys.argv) > 1:
-        text = " ".join(sys.argv[1:]).upper()
+    parser = get_parser()
+    args = parser.parse_args()
 
-    print()
-    print_rainbowed(text,
-                    fonts.font1,
-                    spacing = 2)
-    #  print_attributed(text,
-    #                   fonts.font1,
-    #                   spacing = 2,
-    #                   fg_color = 3,
-    #                   bg_color = 0)
-    print()
+    if args.rainbow:
+        text = " ".join(args.text).upper()
+        printer.rainbow(text,
+                        font.font1,
+                        args.spacing[0])
+    elif args.color:
+        text = " ".join(args.text).upper()
+        printer.attributed(text,
+                           font.font1,
+                           args.spacing[0],
+                           fg_color = args.color[0],
+                           bg_color = 0)
+    else:
+        parser.print_help()
 
 
 if __name__=="__main__":
